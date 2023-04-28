@@ -15,7 +15,7 @@ async function run(){
 
     console.log(searchBtnText);
 
-    // await browser.close();
+    await browser.close();
 
   } catch (error) {
     console.log(error);
