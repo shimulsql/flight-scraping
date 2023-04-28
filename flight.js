@@ -32,7 +32,7 @@ import moment from "moment";
       })
     }
 
-    console.log(pageCount);
+    console.log('page count:' + pageCount);
 
     // scroll 5 times and wait 5 second each time
     if(pageCount == 1){
@@ -64,8 +64,10 @@ import moment from "moment";
 
 })).then(async (data) => {
 
-  // console.log(data);
-  // return;
+  if(process.env.APP_DEBUG == "true"){
+    console.log(data);
+    return;
+  }
 
   // data collect
   var dataToInsert = [];
