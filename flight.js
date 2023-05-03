@@ -2,14 +2,14 @@ import puppeteer from "puppeteer";
 import { db } from './database.mjs';
 import moment from "moment";
 
+let browser = null;
+let results = [];
+let pageCount = 1;
+
 (new Promise ( async (resolve, reject) => {
   
-  let browser = null;
-  let results = [];
-  let pageCount = 1;
-
   try{
-    browser = await puppeteer.launch({headless: false});
+    browser = await puppeteer.launch({headless: "new"});
     const page = await browser.newPage();
     
 
@@ -18,7 +18,9 @@ import moment from "moment";
       width: 1920
     })
 
-    await page.goto('https://www.gozayaan.com/flight/list?adult=1&child=0&child_age=&infant=0&cabin_class=Economy&trips=DAC,CXB,2023-05-06', {timeout: 0});
+    page.setDefaultNavigationTimeout(60000);
+
+    await page.goto('https://www.gozayaan.com/flight/list?adult=1&child=0&child_age=&infant=0&cabin_class=Economy&trips=DAC,CXB,2023-05-06');
     
     // wait for first xhr response from the server
     await page.waitForResponse(async res => {
@@ -69,8 +71,12 @@ import moment from "moment";
       results = results.concat(await extractedEvaluate(page));
 
       if(pageCount != i && pageCount != 1){
-        await page.waitForSelector('.pagination .next-item');
-        await page.click('.pagination .next-item')
+        try {
+          await page.waitForSelector('.pagination .next-item', {
+            timeout
+          });
+          await page.click('.pagination .next-item')
+        } catch (error) {  }
       }
     }
 
@@ -82,9 +88,9 @@ import moment from "moment";
     reject(e);
     
   } finally {
-
-    await browser.close();
-
+    if(browser != null) {
+      await browser.close();
+    }
   }
 
 })).then(async (data) => {
