@@ -4,23 +4,45 @@ import moment from "moment";
 
 (new Promise ( async (resolve, reject) => {
   
+  let browser = null;
+  let results = [];
+  let pageCount = 1;
+
   try{
-    const browser = await puppeteer.launch();
+    browser = await puppeteer.launch({headless: false});
     const page = await browser.newPage();
-    let results = [];
-    let pageCount = 1;
+    
 
     await page.setViewport({
       height: 1000,
       width: 1920
     })
 
-    await page.goto('https://www.gozayaan.com/flight/list?adult=1&child=0&child_age=&infant=0&cabin_class=Economy&trips=DAC,CXB,2023-04-29');
+    await page.goto('https://www.gozayaan.com/flight/list?adult=1&child=0&child_age=&infant=0&cabin_class=Economy&trips=DAC,CXB,2023-05-06', {timeout: 0});
     
     // wait for first xhr response from the server
-    await page.waitForResponse(res => {
-      return res.url().includes('https://production.gozayaan.com/api/') && res.status() == 200;
+    await page.waitForResponse(async res => {
+      if(res.url().includes('https://production.gozayaan.com/api/') && res.status() == 200){
+
+        // console.log(res.url());
+
+        /**
+         * Wait for the response which have flights data
+         */
+        
+        try{
+          let response = JSON.parse(await res.text())
+
+          if(response?.result?.results?.length > 0){
+            return true;
+          }
+
+        } catch (error) {
+          // console.log(error)
+        }
+      }
     });
+
 
     let paginationEl = await page.$('.pagination');
 
@@ -38,7 +60,7 @@ import moment from "moment";
     if(pageCount == 1){
       for (let i = 0; i < 6; i++) {
         await page.evaluate('window.scrollBy(0, document.body.scrollHeight)');
-        await page.waitForTimeout(5000);
+        await page.waitForTimeout(3000);
       }
     }
 
@@ -52,13 +74,16 @@ import moment from "moment";
       }
     }
 
-    await browser.close();
-
+    
     resolve(results)
-
+    
   } catch(e) {
-
+    
     reject(e);
+    
+  } finally {
+
+    await browser.close();
 
   }
 
