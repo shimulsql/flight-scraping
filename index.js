@@ -10,12 +10,12 @@ import { db } from './database.mjs';
     {
       from: 'DAC',
       to: 'CXB',
-      date: ['2023-05-08','2023-05-09'],
+      date: ['2023-05-09','2023-05-12'],
     },
     {
       from: 'DAC',
       to: 'DXB',
-      date: ['2023-05-08','2023-05-11'],
+      date: ['2023-05-09','2023-05-12'],
     }
   ];
 
@@ -40,7 +40,12 @@ import { db } from './database.mjs';
         var flightCodeId = await db('flight_code').where('flight_code', flight.code).first();
         var from = await db('location').where('location_name', journey.from).first();
         var to = await db('location').where('location_name', journey.to).first();
-    
+        
+        if(!to){
+          console.log(flight.name);
+          console.log(journey.to);
+          console.log(to);
+        }
     
         return({
           flight_no: flight.code + flight.number,

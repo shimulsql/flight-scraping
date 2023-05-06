@@ -5,6 +5,7 @@ export default (results) => (new Promise(async (resolve, reject) => {
   let data = results.map((result) => {
 
     let segment = result.flights[0].options[0].segments[0];
+    let option = result.flights[0].options[0];
 
     return {
       flight: {
@@ -14,12 +15,12 @@ export default (results) => (new Promise(async (resolve, reject) => {
         version: segment.equipment,
       },
       journey: {
-        from: segment.origin,
-        to: segment.destination,
-        arrival_date: segment.arrival_time,
-        departure_date: segment.departure_time,
-        arrival_at: moment(segment.arrival_time).format('HH:mm'),
-        departure_at: moment(segment.departure_time).format('HH:mm'),
+        from: result.flights[0].origin,
+        to: result.flights[0].destination,
+        arrival_date: option.arrival_time,
+        departure_date: option.departure_time,
+        arrival_at: moment(option.arrival_time).format('HH:mm'),
+        departure_at: moment(option.departure_time).format('HH:mm'),
         
       },
       price: {
