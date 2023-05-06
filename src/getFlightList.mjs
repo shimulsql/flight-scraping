@@ -21,14 +21,13 @@ export default (key) => (new Promise(async (resolve, reject) => {
 
     if(data.error.code == 400) {
       console.log('Error: ' + data.error.message);
-    } else {
-      
-      console.log(`Found ${data.result.results.length} flights`);
-
-      const formattedData = await formatResults(data.result.results);
-
-      resolve(formattedData);
+      return;
     }
+
+    console.log(`Found ${data.result.results.length} flights | ${data.result.search_params.trips[0].origin} - ${data.result.search_params.trips[0].destination} | ${data.result.search_params.trips[0].preferred_time}`);
+
+    const formattedData = await formatResults(data.result.results);
+    resolve(formattedData);
 
   } catch (error) { 
     reject(error);

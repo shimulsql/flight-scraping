@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export default (results) => (new Promise(async (resolve, reject) => {
 
   let data = results.map((result) => {
@@ -14,8 +16,11 @@ export default (results) => (new Promise(async (resolve, reject) => {
       journey: {
         from: segment.origin,
         to: segment.destination,
-        arrival_time: segment.arrival_time,
-        departure_time: segment.departure_time,
+        arrival_date: segment.arrival_time,
+        departure_date: segment.departure_time,
+        arrival_at: moment(segment.arrival_time).format('HH:mm'),
+        departure_at: moment(segment.departure_time).format('HH:mm'),
+        
       },
       price: {
         total: result.total_price,
