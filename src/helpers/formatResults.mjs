@@ -1,11 +1,11 @@
 import moment from "moment";
 
-export default (results) => (new Promise(async (resolve, reject) => {
+export default (result) => (new Promise(async (resolve, reject) => {
 
-  let data = results.map((result) => {
+  let data = result.results.map((item) => {
 
-    let segment = result.flights[0].options[0].segments[0];
-    let option = result.flights[0].options[0];
+    let segment = item.flights[0].options[0].segments[0];
+    let option = item.flights[0].options[0];
 
     return {
       flight: {
@@ -15,8 +15,8 @@ export default (results) => (new Promise(async (resolve, reject) => {
         version: segment.equipment,
       },
       journey: {
-        from: result.flights[0].origin,
-        to: result.flights[0].destination,
+        from: result.search_params.trips[0].origin,
+        to: result.search_params.trips[0].destination,
         arrival_date: option.arrival_time,
         departure_date: option.departure_time,
         arrival_at: moment(option.arrival_time).format('HH:mm'),
@@ -24,8 +24,8 @@ export default (results) => (new Promise(async (resolve, reject) => {
         
       },
       price: {
-        total: result.total_price,
-        tax: result.total_taxes,
+        total: item.total_price,
+        tax: item.total_taxes,
       }
 
     }

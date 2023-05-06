@@ -26,7 +26,7 @@ export default (key) => (new Promise(async (resolve, reject) => {
 
     console.log(`Found ${data.result.results.length} flights | ${data.result.search_params.trips[0].origin} - ${data.result.search_params.trips[0].destination} | ${data.result.search_params.trips[0].preferred_time}`);
 
-    const formattedData = await formatResults(data.result.results);
+    const formattedData = await formatResults(data.result);
     resolve(formattedData);
 
   } catch (error) { 
