@@ -1,7 +1,9 @@
 import knex from "knex";
 import * as dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+const dirname = path.resolve();
+dotenv.config({ path: path.join(dirname, '.env')});
 
 const db = knex({
   client: 'mysql',
