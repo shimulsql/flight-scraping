@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export default (payload) => (new Promise(async (resolve, reject) => {
+export default (payload, index) => (new Promise(async (resolve, reject) => {
 
   const url = "https://production.gozayaan.com/api/flight/v2.0/search/";
 
@@ -16,20 +16,27 @@ export default (payload) => (new Promise(async (resolve, reject) => {
       json: true,
     };
 
-    const response = await axios(axiosOptions);
-    const data = response.data;
+    setTimeout( async () => {
 
-    if(data.error.code == 400) {
-      console.log('Error: ' + data.error.message);
-    } else {
-      console.log(`Found search key: ${data?.result?.id} | ${data.result.search_params.trips[0].origin} - ${data.result.search_params.trips[0].destination} | ${data.result.search_params.trips[0].preferred_time}`);
+      const response = await axios(axiosOptions);
+      const data = response.data;
+  
+  
+      if(data.error.code == 400) {
+        console.log('Error: ' + JSON.stringify(data.error));
+        resolve(null);
+      } else {
+        console.log(`Found search key: ${data?.result?.id} | ${data.result.search_params.trips[0].origin} - ${data.result.search_params.trips[0].destination} | ${data.result.search_params.trips[0].preferred_time}`);
+  
+        resolve(data?.result?.id);
+      }
 
-      resolve(data?.result?.id);
-    }
+    }, index * 1000);
 
   } catch (error) { 
-    reject(error);
+    reject(error.message);
    }
 
 
 }))
+

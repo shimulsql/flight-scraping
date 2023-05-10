@@ -3,6 +3,9 @@ import getSearchKey from './src/getSearchKey.mjs';
 import getFlightList from './src/getFlightList.mjs';
 import moment from 'moment/moment.js';
 import { db } from './database.mjs';
+import queryBuilder from './src/queryBuilder.mjs';
+
+
 
 (async () => {
 
@@ -10,26 +13,32 @@ import { db } from './database.mjs';
     {
       from: 'DAC',
       to: 'CXB',
-      date: ['2023-05-09','2023-05-12'],
+      date: ['2023-05-12','2023-05-15'],
     },
     {
       from: 'DAC',
       to: 'DXB',
-      date: ['2023-05-09','2023-05-12'],
+      date: ['2023-05-12','2023-05-15'],
     }
   ];
+
+  // let queries = await queryBuilder();
 
   let payloads = queries.map((query) => {
     return payloadGenerator(query);
   }).flat();
 
-  let searchKeys = await Promise.all(payloads.map(async (payload) => {
-    return await getSearchKey(payload);
+  console.log("Total payloads for search key: " + payloads.length);
+
+  let searchKeys = await Promise.all(payloads.map(async (payload, index) => {
+    return await getSearchKey(payload, index);
   }))
 
 
-  const flights = Array.from(await Promise.all(searchKeys.map(async (key) => {
-    return await getFlightList(key);
+  const flights = Array.from(await Promise.all(searchKeys.map(async (key, index) => {
+    if(key) {
+      return await getFlightList(key, index);
+    }
   }))).flat();
 
     // data collect
@@ -66,7 +75,8 @@ import { db } from './database.mjs';
     // console.log(dataToInsert);
   
     // insert to db
-    await db('flights_arrival').insert(dataToInsert)
+    await db('flights_arrival').insert(dataToInsert);
+
     console.log("Data inserted | rows: " + dataToInsert.length);
   
     await db.destroy();
