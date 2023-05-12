@@ -1,85 +1,52 @@
-import payloadGenerator from './src/payloadGenerator.mjs';
-import getSearchKey from './src/getSearchKey.mjs';
-import getFlightList from './src/getFlightList.mjs';
-import moment from 'moment/moment.js';
+import * as dotenv from 'dotenv'
+import queryBuilder from "./src/queryBuilder.mjs";
+import dataInsert from "./dataInsert.js";
 import { db } from './database.mjs';
-import queryBuilder from './src/queryBuilder.mjs';
 
-
+dotenv.config();
 
 (async () => {
 
-  let queries = [
-    {
-      from: 'DAC',
-      to: 'CXB',
-      date: ['2023-05-12','2023-05-15'],
-    },
-    {
-      from: 'DAC',
-      to: 'DXB',
-      date: ['2023-05-12','2023-05-15'],
-    }
-  ];
-
-  // let queries = await queryBuilder();
-
-  let payloads = queries.map((query) => {
-    return payloadGenerator(query);
-  }).flat();
-
-  console.log("Total payloads for search key: " + payloads.length);
-
-  let searchKeys = await Promise.all(payloads.map(async (payload, index) => {
-    return await getSearchKey(payload, index);
-  }))
-
-
-  const flights = Array.from(await Promise.all(searchKeys.map(async (key, index) => {
-    if(key) {
-      return await getFlightList(key, index);
-    }
-  }))).flat();
-
-    // data collect
-    var dataToInsert = [];
-
-    dataToInsert = await Promise.all(
-      flights.map( async ({flight, journey, price}) => {
-        var flightCodeId = await db('flight_code').where('flight_code', flight.code).first();
-        var from = await db('location').where('location_name', journey.from).first();
-        var to = await db('location').where('location_name', journey.to).first();
-        
-        if(!to){
-          console.log(flight.name);
-          console.log(journey.to);
-          console.log(to);
-        }
-    
-        return({
-          flight_no: flight.code + flight.number,
-          aircraft_version: flight.version,
-          flight_date: moment(journey.arrival_date).format("YYYY-MM-DD"),
-          flight_time_skd: journey.departure_at.replace(':', ''),
-          flight_code_id: flightCodeId?.flight_code_id || null,
-          origin_station: from.location_id,
-          destination1: to.location_id,
-          arrival_scheduledTime: journey.arrival_date,
-          departure_scheduledTime: journey.departure_date,
-          price: price.total,
-          tax: price.tax,
-        })
-      } )
-    )
+  try {
+    let queryChunks = [];
+    const chunkSize = 11;
+    let queries = await queryBuilder();
       
-    // console.log(dataToInsert);
-  
-    // insert to db
-    await db('flights_arrival').insert(dataToInsert);
+    for (let i = 0; i < queries.length; i += chunkSize) {
+      queryChunks.push(queries.slice(i, i + chunkSize));
+    }
 
-    console.log("Data inserted | rows: " + dataToInsert.length);
-  
-    await db.destroy();
+    // queryChunks = [
+    //   [ { from: 'DAC', to: 'RGN', date: ['2023-05-12', '2023-05-14'] } ],
+    // ]
+    // console.log(queryChunks); return;
+    
+    await Promise.all(queryChunks.map(async (query, i) => {
+
+      var delay =  i * 1000 * 60 * 10;
+
+      if(i == 0) {
+        delay = 0;
+      }
+
+      // await dataInsert(query, delay);
+
+      console.log(query);
+
+    }))
+
+    console.log('Finish');
+
+  } catch (error) {
+
+    console.log(error.message);
+
+  } finally {
+
+    db.destroy();
+
+  }
+
 
 
 })()

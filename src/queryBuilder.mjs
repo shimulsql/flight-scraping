@@ -1,4 +1,5 @@
-import { db } from "../database.mjs"
+import { db } from "../database.mjs";
+import moment from "moment";
 
 export default () => (new Promise(async (resolve, reject) => {
   let queries = [];
@@ -16,10 +17,6 @@ export default () => (new Promise(async (resolve, reject) => {
       buildQuery('DAC', loc, queries)
     })
 
-    // from all to DAC
-    locations.forEach((loc) => {
-      buildQuery(loc, 'DAC', queries)
-    })
 
     console.log('Total Queries: ' + queries.length);
 
@@ -33,6 +30,6 @@ const buildQuery = (from, to, queries) => {
   queries.push({
     from: from,
     to: to,
-    date: ['2023-05-10', '2023-05-15']
+    date: [moment().format('YYYY-MM-DD'), moment().add(5, 'day').format('YYYY-MM-DD')]
   });
 }

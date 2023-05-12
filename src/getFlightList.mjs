@@ -22,17 +22,25 @@ export default (key, index) => (new Promise(async (resolve, reject) => {
   
       if(data.error.code == 400) {
         console.log('Error: ' + JSON.stringify(data.error));
+        resolve(null);
         return;
       }
   
-      console.log(`Found ${data.result.results.length} flights | ${data.result.search_params.trips[0].origin} - ${data.result.search_params.trips[0].destination} | ${data.result.search_params.trips[0].preferred_time}`);
+      data.result.search_params.trips.map((trip) => {
+        console.log(`Found ${data.result.results.length} flights | ${trip.origin} - ${trip.destination} | ${trip.preferred_time}`);
+      });
+
+      
   
-      const formattedData = await formatResults(data.result);
+      const formattedData = Array.from(await formatResults(data.result)).flat();
+
       resolve(formattedData);
   
-    } catch (error) { }
+    } catch (error) {
+      console.log(error.message);
+    }
 
-  }, index * 1000);
+  }, index * 2000);
 
 
 }))
