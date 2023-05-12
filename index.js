@@ -22,12 +22,12 @@ dotenv.config();
     // console.log(queryChunks); return;
     
     await Promise.all(queryChunks.map(async (query, i) => {
-      var delay =  i * 1000 * 60 * 10;
+      var delay =  i * 1000 * 60 * 6;
 
       if(i == 0) {
         delay = 0;
       }
-      
+
       await dataInsert(query, delay);
     }))
 
