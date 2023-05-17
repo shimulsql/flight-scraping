@@ -16,8 +16,9 @@ export default (key, index) => (new Promise(async (resolve, reject) => {
         },
         json: true,
       };
-  
-      const response = await axios(axiosOptions);
+
+      let response = await axios(axiosOptions);
+
       const data = response.data;
   
       if(data.error.code == 400) {
@@ -38,6 +39,7 @@ export default (key, index) => (new Promise(async (resolve, reject) => {
   
     } catch (error) {
       console.log(error.message);
+      resolve(null);
     }
 
   }, index * 2000);

@@ -17,16 +17,28 @@ export default (payload, index) => (new Promise(async (resolve, reject) => {
     };
 
     setTimeout( async () => {
+      let response;
 
-      const response = await axios(axiosOptions);
-      const data = response.data;
+      try {
+        response = await axios(axiosOptions);
+      } catch (error) { 
+        console.log("Server Error")
+        resolve(null);
+      }
+      
+      const data = response?.data;
+
+      if(!data || !data.result) {
+        resolve(null);
+        return;
+      }
   
-  
-      if(data.error.code == 400) {
+      if(data.error.code) {
         console.log('Error: ' + JSON.stringify(data.error));
         
         resolve(null);
       } else {
+
         console.log(`Found search key: ${data?.result?.id} | ${data.result.search_params.trips[0].origin} - ${data.result.search_params.trips[0].destination} | ${data.result.search_params.trips[0].preferred_time}`);
   
         resolve(data?.result?.id);
