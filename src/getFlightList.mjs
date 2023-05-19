@@ -17,11 +17,18 @@ export default (key, index) => (new Promise(async (resolve, reject) => {
         json: true,
       };
 
-      let response = await axios(axiosOptions);
+      let response;
+      
+      try{
+        response = await axios(axiosOptions);
+      } catch(e) {
+        console.log("Get Flight Server Error");
+        resolve(null);
+      }
 
       const data = response.data;
   
-      if(data.error.code == 400) {
+      if(data.error.code) {
         console.log('Error: ' + JSON.stringify(data.error));
         resolve(null);
         return;
@@ -42,7 +49,7 @@ export default (key, index) => (new Promise(async (resolve, reject) => {
       resolve(null);
     }
 
-  }, index * 2000);
+  }, index * 3000);
 
 
 }))

@@ -44,7 +44,7 @@ export default (payload, index) => (new Promise(async (resolve, reject) => {
         resolve(data?.result?.id);
       }
 
-    }, index * 2000);
+    }, index * 3000);
 
   } catch (error) { 
     console.log(error.message);
