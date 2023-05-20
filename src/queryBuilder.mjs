@@ -51,11 +51,11 @@ export default () => (new Promise(async (resolve, reject) => {
 }))
 
 const buildQuery = (from, to, queries) => {
-  let dayFromStart = 25;
+  let dayFromStart = 0;
 
   queries.push({
     from: from,
     to: to,
-    date: [moment().add(dayFromStart, 'day').format('YYYY-MM-DD'), moment().add(dayFromStart + 5, 'day').format('YYYY-MM-DD')]
+    date: [moment().add(dayFromStart, 'day').format('YYYY-MM-DD'), moment().add(dayFromStart + 7, 'day').format('YYYY-MM-DD')]
   });
 }
