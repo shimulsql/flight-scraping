@@ -8,8 +8,9 @@ dotenv.config();
 (async () => {
 
   try {
+    const chunkSize = 7;
+    const waitTimeMinute = 10;
     let queryChunks = [];
-    const chunkSize = 11;
     let queries = await queryBuilder();
       
     for (let i = 0; i < queries.length; i += chunkSize) {
@@ -17,12 +18,13 @@ dotenv.config();
     }
 
     // queryChunks = [
-    //   [ { from: 'DAC', to: 'RGN', date: ['2023-05-12', '2023-05-14'] } ],
+    //   [ { from: 'DAC', to: 'JED', date: ['2023-06-14', '2023-06-15'] } ],
     // ]
+
     // console.log(queryChunks); return;
     
     await Promise.all(queryChunks.map(async (query, i) => {
-      var delay =  i * 1000 * 60 * 8;
+      var delay =  i * 1000 * 60 * waitTimeMinute;
 
       if(i == 0) {
         delay = 0;

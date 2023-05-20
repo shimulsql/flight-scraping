@@ -17,6 +17,9 @@ export default (queries, delayTime) => (new Promise(async (resolve, reject) => {
       return payloadGenerator(query);
     }).flat();
 
+    // console.log(payloads);
+    // return;
+
     console.log("Total payloads for search key: " + payloads.length);
 
     let searchKeys = Array.from(await Promise.all(payloads.map(async (payload, index) => {
@@ -29,11 +32,16 @@ export default (queries, delayTime) => (new Promise(async (resolve, reject) => {
       }
     }))).flat().filter(x => x != null);
 
+    // filter only bangladesh biman
+    let bgFlights = flights.filter( x => {
+      return x.flight.code == 'BG'
+    } );
+
     // data collect
     var dataToInsert = [];
 
     dataToInsert = await Promise.all(
-      flights.map(async ({ flight, journey, price }) => {
+      bgFlights.map(async ({ flight, journey, price }) => {
         var flightCodeId = await db('flight_code').where('flight_code', flight.code).first();
         var from = await db('location').where('location_name', journey.from).first();
         var to = await db('location').where('location_name', journey.to).first();
@@ -67,7 +75,7 @@ export default (queries, delayTime) => (new Promise(async (resolve, reject) => {
     if(dataToInsert.length > 0) {
       await db('flights_arrival').insert(dataToInsert);
 
-      console.log("Data inserted | rows: " + dataToInsert.length);
+      console.log("Data inserted | rows: " + dataToInsert.length + " | at: " + moment().format('DD-MM-YYYY hh:mm'));
     } else {
       console.log("Data not found");
     }

@@ -38,8 +38,6 @@ export default (key, index) => (new Promise(async (resolve, reject) => {
         console.log(`Found ${data.result.results.length} flights | ${trip.origin} - ${trip.destination} | ${trip.preferred_time}`);
       });
 
-      
-  
       const formattedData = Array.from(await formatResults(data.result)).flat();
 
       resolve(formattedData);
