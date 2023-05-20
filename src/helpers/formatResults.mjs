@@ -18,8 +18,8 @@ export default (data) => (new Promise(async (resolve, reject) => {
           version: segment.equipment,
         },
         journey: {
-          from: data.search_params.trips[i].origin,
-          to: data.search_params.trips[i].destination,
+          from: segment.origin,
+          to: segment.destination,
           arrival_date: option.arrival_time,
           departure_date: option.departure_time,
           arrival_at: moment(option.arrival_time).format('HH:mm'),
