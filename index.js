@@ -21,7 +21,7 @@ dotenv.config();
     //   [ { from: 'DAC', to: 'JED', date: ['2023-06-14', '2023-06-15'] } ],
     // ]
 
-    console.log(queryChunks); return;
+    // console.log(queryChunks); return;
     
     await Promise.all(queryChunks.map(async (query, i) => {
       var delay =  i * 1000 * 60 * waitTimeMinute;
