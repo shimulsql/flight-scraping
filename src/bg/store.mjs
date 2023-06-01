@@ -4,20 +4,24 @@ import moment from "moment";
 export default (flights) => (new Promise(async resolve => {
   let dataToInsert = [];
 
-  dataToInsert = await Promise.all(
-    flights.map(async flight => {
-      return await preProcessStore(flight);
-    })
-  );
-
-  if(dataToInsert.length > 0){
-    await db('flights').insert(dataToInsert);
-  }
+  try {
+    dataToInsert = await Promise.all(
+      flights.map(async flight => {
+        return await preProcessStore(flight);
+      })
+    );
   
-  resolve({
-    count: dataToInsert.length,
-    at: moment().format('DD-MM-YYYY hh:mm')
-  })
+    if(dataToInsert.length > 0){
+      await db('flights').insert(dataToInsert);
+    }
+    
+    resolve({
+      count: dataToInsert.length,
+      at: moment().format('DD-MM-YYYY hh:mm')
+    })
+  } catch (error) {
+    console.log("Insert error: " + error.message);
+  }
 
 }))
 
