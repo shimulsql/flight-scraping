@@ -4,7 +4,8 @@ import getFlight from './getFlight.mjs';
 import store from './store.mjs';
 
 export default (queries, delayTime, config) => (new Promise(async (resolve) => {
-  
+  let stored;
+
   try {
 
     await delay(delayTime);
@@ -23,14 +24,14 @@ export default (queries, delayTime, config) => (new Promise(async (resolve) => {
 
     console.log('Ok');
 
-    const stored = await store(flights);
+    stored = await store(flights);
 
     console.log(`Inserted: ${stored.count} rows | ${stored.at}`);
 
-    resolve(stored.count);
-
   } catch (error) {
-    
+    console.log("Process error: " + error.message);
   }
+
+  resolve(stored.count);
 
 }))

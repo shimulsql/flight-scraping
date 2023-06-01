@@ -15,13 +15,14 @@ export default (flights) => (new Promise(async resolve => {
       await db('flights').insert(dataToInsert);
     }
     
-    resolve({
-      count: dataToInsert.length,
-      at: moment().format('DD-MM-YYYY hh:mm')
-    })
   } catch (error) {
     console.log("Insert error: " + error.message);
   }
+
+  resolve({
+    count: dataToInsert.length,
+    at: moment().format('DD-MM-YYYY hh:mm')
+  })
 
 }))
 
