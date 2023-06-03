@@ -2,19 +2,23 @@ import queryBuilder from "./src/bg/queryBuilder.mjs";
 import routesBuilder from "./src/bg/routesBuilder.mjs"
 import processQueries from "./src/bg/processQueries.mjs";
 import { db } from "./database.mjs";
+import increaseDate, { getIncreaseDate } from "./src/bg/increaseDate.mjs";
 
 (async () => {
 
+  const dateFromStart = await getIncreaseDate();
+
   const config = {
-    dateFromStart: 0,
-    dateIncrease: 5,
-    waitChunkMinute: 3,
+    dateFromStart: parseInt(dateFromStart),
+    dateIncrease: 2,
+    waitChunkMinute: 2,
     waitServerRequestSecond: 2,
-    chunkSize: 8,
+    chunkSize: 13,
   }
   const routes = routesBuilder(config);
   const queries = queryBuilder(routes);
   let queryChunks = [];
+  let increaseDay = parseInt(dateFromStart) + config.dateIncrease + 1;
    
   for (let i = 0; i < queries.length; i += config.chunkSize) {
     queryChunks.push(queries.slice(i, i + config.chunkSize));
@@ -32,6 +36,13 @@ import { db } from "./database.mjs";
 
     console.log('Success!');
     console.log(`\n \nTotal rows inserted: ${process.reduce((a, b) => a + b, 0)}`);
+
+    if(increaseDay > 60){
+      increaseDay = 0;
+    }
+
+    await increaseDate(increaseDay);
+
   } catch (error) {
     console.log(error.message);
   } finally{

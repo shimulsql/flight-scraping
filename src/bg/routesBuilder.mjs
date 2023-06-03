@@ -40,10 +40,10 @@ export default (config) => {
 
 }
 
-const generate = (from, to) => {
-  let dayFromStart = 0;
-  let dateIncrease = 5;
-  
+const generate = (from, to, config) => {
+  let dayFromStart = config.dateFromStart;
+  let dateIncrease = config.dateIncrease;
+
   return {
     from: from,
     to: to,

@@ -22,8 +22,6 @@ export default (queries, delayTime, config) => (new Promise(async (resolve) => {
       return await getFlight(payload, delay);
     })))).flat();
 
-    console.log('Ok');
-
     stored = await store(flights);
 
     console.log(`Inserted: ${stored.count} rows | ${stored.at}`);
